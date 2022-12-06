@@ -1,5 +1,6 @@
 import httplib2
 import os.path
+import threading
 from PyQt5 import QtGui
 from model import QueryGenerator
 
@@ -31,6 +32,13 @@ class MainController:
         self.ui.listPeople.addItems(self.peopleDict)
 
     def show_info(self, person):
+        functions = [self.show_image, self.show_description, self.show_name,
+                     self.show_birthDate, self.show_deathDate, self.show_link]
+
+        for func in functions:
+            func(person)
+
+    def show_image(self, person):
         image = self.queryGen.get_image("dbr:" + person)
         if "image" in image[0]:
             uri_image = image[0]["image"]["value"]
@@ -47,6 +55,7 @@ class MainController:
             pixmap = QtGui.QPixmap("img/user.png")
         self.ui.image_label.setPixmap(pixmap)
 
+    def show_description(self, person):
         description = self.queryGen.get_description("dbr:" + person)
         if "description" in description[0]:
             res = set()
@@ -56,6 +65,7 @@ class MainController:
         else:
             self.ui.description_label.setText("---")
 
+    def show_name(self, person):
         name = self.queryGen.get_name("dbr:" + person)
         if "name" in name[0]:
             res = set()
@@ -66,6 +76,7 @@ class MainController:
         else:
             self.ui.name_label.setText("---")
 
+    def show_birthDate(self, person):
         birthDate = self.queryGen.get_birth_date("dbr:" + person)
         if "birthDate" in birthDate[0]:
             res = set()
@@ -75,6 +86,7 @@ class MainController:
         else:
             self.ui.birthYear_label.setText("---")
 
+    def show_deathDate(self, person):
         deathDate = self.queryGen.get_death_date("dbr:" + person)
         if "deathDate" in deathDate[0]:
             res = set()
@@ -84,6 +96,7 @@ class MainController:
         else:
             self.ui.deathYear_label.setText("---")
 
+    def show_link(self, person):
         link = self.queryGen.get_link("dbr:" + person)
         if "link" in link[0]:
             res = set()
@@ -92,6 +105,3 @@ class MainController:
             self.ui.link_label.setText("\n".join(res))
         else:
             self.ui.link_label.setText("---")
-
-
-
